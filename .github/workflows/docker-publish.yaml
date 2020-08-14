@@ -1,0 +1,30 @@
+name: docker-publish
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
+on:
+  push:
+    tags:
+    - "**"
+    branches:
+    - "dev"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # https://github.com/actions/checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Generate Docker image tags
+      run: echo ::set-env name=DOCKER_IMAGE_TAG::$(git rev-parse --short=10 HEAD)
+
+    # https://github.com/docker/build-push-action
+    - uses: docker/build-push-action@v1
+      with:
+        username: _json_key
+        password: ${{ secrets.GOOGLE_SA_GCR_JSON }}
+        registry: asia.gcr.io
+        repository: swag-2c052/${{ github.event.repository.name }}
+        tags: ${{ env.DOCKER_IMAGE_TAG }}
+        tag_with_ref: true
