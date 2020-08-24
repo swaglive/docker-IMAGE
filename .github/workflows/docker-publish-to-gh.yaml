@@ -1,4 +1,4 @@
-name: docker-publish-to-gcr
+name: docker-publish-to-gh
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
 on:
@@ -10,10 +10,8 @@ on:
     - "master"
 
 jobs:
-  docker-publish-to-gcr:
+  docker-publish-to-gh:
     runs-on: ubuntu-latest
-    env:
-      GCP_PROJECT_ID: proj-1a2bc
     steps:
     # https://github.com/actions/checkout
     - name: Checkout
@@ -26,9 +24,9 @@ jobs:
     - uses: docker/build-push-action@v1
       with:
         # https://cloud.google.com/container-registry/docs/advanced-authentication#json-key
-        username: _json_key
-        password: ${{ secrets.GOOGLE_SA_GCR_JSON }}
-        registry: gcr.io
-        repository: ${{ env.GCP_PROJECT_ID }}/${{ github.event.repository.name }}
+        username: ${{ env.GITHUB_ACTOR }}
+        password: ${{ github.token }}
+        registry: docker.pkg.github.com
+        repository: ${{ env.GITHUB_REPOSITORY }}/${{ github.event.repository.name }}
         tags: ${{ env.DOCKER_IMAGE_TAG }}
         tag_with_ref: true
