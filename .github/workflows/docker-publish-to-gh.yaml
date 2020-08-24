@@ -17,16 +17,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Generate Docker image tags
-      run: echo ::set-env name=DOCKER_IMAGE_TAG::$(git rev-parse --short=10 HEAD)
-
     # https://github.com/docker/build-push-action
     - uses: docker/build-push-action@v1
       with:
-        # https://cloud.google.com/container-registry/docs/advanced-authentication#json-key
+        # https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables
         username: ${{ env.GITHUB_ACTOR }}
         password: ${{ github.token }}
         registry: docker.pkg.github.com
         repository: ${{ env.GITHUB_REPOSITORY }}/${{ github.event.repository.name }}
-        tags: ${{ env.DOCKER_IMAGE_TAG }}
         tag_with_ref: true
+        tag_with_sha: true
