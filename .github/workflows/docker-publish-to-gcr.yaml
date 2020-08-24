@@ -6,7 +6,8 @@ on:
     tags:
     - "**"
     branches:
-    - "dev"
+    - "v*.*.**"
+    - "master"
 
 jobs:
   deploy:
